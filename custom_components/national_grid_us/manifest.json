@@ -1,13 +1,19 @@
 {
   "domain": "national_grid_us",
   "name": "National Grid US",
-  "codeowners": ["@virtitnerd"],
+  "codeowners": [
+    "@nicholasmullikin"
+  ],
   "config_flow": true,
-  "dependencies": ["recorder"],
-  "documentation": "https://github.com/virtitnerd/ha_nationalgrid",
+  "dependencies": [
+    "recorder"
+  ],
+  "documentation": "https://github.com/nicholasmullikin/ha_nationalgrid",
   "integration_type": "hub",
   "iot_class": "cloud_polling",
-  "issue_tracker": "https://github.com/virtitnerd/ha_nationalgrid/issues",
-  "requirements": ["py-nationalgrid==0.6.6"],
-  "version": "0.0.0-dev"
+  "issue_tracker": "https://github.com/nicholasmullikin/ha_nationalgrid/issues",
+  "requirements": [
+    "py-nationalgrid @ https://github.com/nicholasmullikin/py-nationalgrid/releases/download/v0.6.6.post1/py_nationalgrid-0.6.6.post1-py3-none-any.whl#sha256=a919bd02fe35040c9e6dc97882e336d5b99847ddd5b09f8f313ceabaf338daff"
+  ],
+  "version": "0.0.0.post1"
 }
