@@ -13,7 +13,7 @@
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/nicholasmullikin/ha_nationalgrid/issues",
   "requirements": [
-    "py-nationalgrid @ https://github.com/nicholasmullikin/py-nationalgrid/releases/download/v0.6.6.post3/py_nationalgrid-0.6.6.post3-py3-none-any.whl#sha256=0aea2b3f8b6cf43afa3f3639aa4473947aaa6f67d7c69e8eaf00666892f82113"
+    "py-nationalgrid @ https://github.com/nicholasmullikin/py-nationalgrid/releases/download/v0.6.6.post4/py_nationalgrid-0.6.6.post4-py3-none-any.whl#sha256=66e8e685f3e9bed152f132821ff7a6bcddfc0210fabfcb63093d64b2dc2e457c"
   ],
-  "version": "0.0.0.post4"
+  "version": "0.0.0.post5"
 }

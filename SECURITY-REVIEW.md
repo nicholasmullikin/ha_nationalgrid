@@ -54,16 +54,20 @@ exception before credential validation. The fork now matches the public
 portal's OAuth parameters, tenant path, transaction query parameters, normal
 sign-in form choice and SelfAsserted confirmation endpoint. Form requests stay
 on the verified issuer host. The business portal settings remain unchanged.
-Request-shape and destination regression tests cover this change. Successful
-account authentication and Energy imports require separate live verification.
+Request-shape and destination regression tests cover this change. OAuth now
+uses HTTPX with verified TLS and scoped cookie transfer to the aiohttp caller.
+Regression tests verify domain/path/Secure scope across redirects and private
+transport errors. API data requests remain on aiohttp. The saved login succeeded
+in both the browser and corrected library, confirming two active billing accounts.
+Account setup and Energy imports require separate live verification.
 
 ## Packaging and tests
 
-The dependency fork release is 0.6.6.post3; its wheel is pinned by URL and SHA-256
-in manifest.json. The integration fork release is 0.0.0.post4. Update deliberately
+The dependency fork release is 0.6.6.post4; its wheel is pinned by URL and SHA-256
+in manifest.json. The integration fork release is 0.0.0.post5. Update deliberately
 from reviewed commits; never deploy a moving branch as a version pin.
 
-Dependency suite: 229 passed, 99.80% coverage (OIDC helper excluded by upstream
+Dependency suite: 231 passed, 99.80% coverage (OIDC helper excluded by upstream
 coverage configuration; privacy tests explicitly exercise its logging).
 Integration suite: 284 passed, 100% measured coverage, including recorder overlap
 regressions, login/re-auth flows, diagnostics and synthetic secret logging tests.
