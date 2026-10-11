@@ -48,7 +48,7 @@ National Grid may only return partial history; absent data is not zero usage.
 ## Packaging and tests
 
 The dependency fork release is 0.6.6.post1; its wheel is pinned by URL and SHA-256
-in manifest.json. The integration fork release is 0.0.0.post1. Update deliberately
+in manifest.json. The integration fork release is 0.0.0.post2. Update deliberately
 from reviewed commits; never deploy a moving branch as a version pin.
 
 Dependency suite: 222 passed, 99.80% coverage (OIDC helper excluded by upstream
