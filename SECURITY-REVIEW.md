@@ -46,13 +46,24 @@ API quota and recorder time. Back up first, verify no old integration conflicts,
 monitor the initial import and do not expose refresh actions to Assist/MCP.
 National Grid may only return partial history; absent data is not zero usage.
 
+## Portal compatibility
+
+On 2026-10-11 the public consumer portal used a different OAuth client and
+policy from upstream's hard-coded UWP policy. That policy returned a B2C
+exception before credential validation. The fork now matches the public
+portal's OAuth parameters, tenant path, transaction query parameters, normal
+sign-in form choice and SelfAsserted confirmation endpoint. Form requests stay
+on the verified issuer host. The business portal settings remain unchanged.
+Request-shape and destination regression tests cover this change. Successful
+account authentication and Energy imports require separate live verification.
+
 ## Packaging and tests
 
-The dependency fork release is 0.6.6.post2; its wheel is pinned by URL and SHA-256
-in manifest.json. The integration fork release is 0.0.0.post3. Update deliberately
+The dependency fork release is 0.6.6.post3; its wheel is pinned by URL and SHA-256
+in manifest.json. The integration fork release is 0.0.0.post4. Update deliberately
 from reviewed commits; never deploy a moving branch as a version pin.
 
-Dependency suite: 223 passed, 99.80% coverage (OIDC helper excluded by upstream
+Dependency suite: 229 passed, 99.80% coverage (OIDC helper excluded by upstream
 coverage configuration; privacy tests explicitly exercise its logging).
 Integration suite: 284 passed, 100% measured coverage, including recorder overlap
 regressions, login/re-auth flows, diagnostics and synthetic secret logging tests.
