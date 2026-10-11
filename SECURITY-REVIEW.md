@@ -59,15 +59,20 @@ uses HTTPX with verified TLS and scoped cookie transfer to the aiohttp caller.
 Regression tests verify domain/path/Secure scope across redirects and private
 transport errors. API data requests remain on aiohttp. The saved login succeeded
 in both the browser and corrected library, confirming two active billing accounts.
-Account setup and Energy imports require separate live verification.
+Both active accounts are configured in HA. Energy validation passed with settled
+and provisional electric sources; the initial recorder import contains 433 settled
+hours and 23 interval hours with no overlap. No hourly gas statistics were available.
+HTTPX/httpcore logging is suppressed only during this OAuth request context to
+prevent URLs and redirect/cookie headers escaping even under global debug logging.
+Other integrations retain their own logging; a synthetic regression tests both.
 
 ## Packaging and tests
 
-The dependency fork release is 0.6.6.post4; its wheel is pinned by URL and SHA-256
-in manifest.json. The integration fork release is 0.0.0.post5. Update deliberately
+The dependency fork release is 0.6.6.post5; its wheel is pinned by URL and SHA-256
+in manifest.json. The integration fork release is 0.0.0.post6. Update deliberately
 from reviewed commits; never deploy a moving branch as a version pin.
 
-Dependency suite: 231 passed, 99.80% coverage (OIDC helper excluded by upstream
+Dependency suite: 232 passed, 99.80% coverage (OIDC helper excluded by upstream
 coverage configuration; privacy tests explicitly exercise its logging).
 Integration suite: 284 passed, 100% measured coverage, including recorder overlap
 regressions, login/re-auth flows, diagnostics and synthetic secret logging tests.
