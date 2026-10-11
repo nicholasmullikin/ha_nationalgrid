@@ -53,14 +53,14 @@ async def async_migrate_entry(
     config_entry: NationalGridConfigEntry,
 ) -> bool:
     """Migrate config entry to a newer version."""
-    _LOGGER.debug("Migrating config entry from version %s", config_entry.version)
+    _LOGGER.debug("Migrating config entry from version %s", "[redacted]")
 
     if config_entry.version == 1:
         hass.config_entries.async_update_entry(config_entry, version=2)
         _LOGGER.info("Migrated National Grid US config entry to version 2")
         return True
 
-    _LOGGER.error("Unknown config entry version: %s", config_entry.version)
+    _LOGGER.error("Unknown config entry version: %s", "[redacted]")
     return False
 
 
@@ -114,12 +114,14 @@ async def _async_migrate_statistics_v1_to_v2(hass: HomeAssistant) -> None:
     try:
         count = await instance.async_add_executor_job(_rename)
     except Exception as err:  # noqa: BLE001
-        _LOGGER.warning("Statistics migration encountered an error: %s", err)
+        _LOGGER.warning(
+            "Statistics migration encountered an error: %s", type(err).__name__
+        )
         return
 
     if count:
         _LOGGER.info(
-            "Migrated %d long-term statistics from national_grid to national_grid_us",
+            "Migrated %s long-term statistics from national_grid to national_grid_us",
             count,
         )
 
@@ -136,7 +138,7 @@ def _warn_if_old_component_present(hass: HomeAssistant) -> None:
     _LOGGER.warning(
         "Old 'national_grid' custom component folder detected at %s. "
         "Remove it and restart Home Assistant to avoid conflicts.",
-        str(old_path),
+        "[redacted]",
     )
     pn_create(
         hass,
@@ -212,18 +214,14 @@ async def async_setup_entry(
     def _scheduled_refresh(now: datetime) -> None:
         """Refresh data at scheduled time."""
         if now.hour == 0:
-            _LOGGER.info(
-                "Midnight refresh triggered at %s",
-                now,
-            )
+            _LOGGER.info("Midnight refresh triggered at %s", now)
             hass.add_job(coordinator.async_refresh_full_with_clear)
         elif coordinator.pending_full_refresh:
             _LOGGER.info("Retrying failed full refresh at %s", now)
             hass.add_job(coordinator.async_refresh_full_with_clear)
         else:
             _LOGGER.info(
-                "Hourly refresh triggered at %s - fetching Interval data only",
-                now,
+                "Hourly refresh triggered at %s - fetching Interval data only", now
             )
             hass.add_job(coordinator.async_refresh_interval_only)
 
@@ -260,16 +258,13 @@ async def _async_setup_services(hass: HomeAssistant) -> None:
             entries = [e for e in entries if e.entry_id == entry_id]
             if not entries:
                 _LOGGER.warning(
-                    "No National Grid integration found with entry_id: %s", entry_id
+                    "No National Grid integration found with entry_id: %s", "[redacted]"
                 )
                 return
 
         for entry in entries:
             coordinator: NationalGridDataUpdateCoordinator = entry.runtime_data
-            _LOGGER.info(
-                "Force full refresh triggered for account: %s",
-                entry.title,
-            )
+            _LOGGER.info("Force full refresh triggered for account: %s", "[redacted]")
 
             # Reset to first refresh mode to get full historical data
             coordinator.reset_to_first_refresh()
@@ -280,10 +275,7 @@ async def _async_setup_services(hass: HomeAssistant) -> None:
             # Import statistics after refresh
             await async_import_all_statistics(hass, coordinator)
 
-            _LOGGER.info(
-                "Force full refresh completed for account: %s",
-                entry.title,
-            )
+            _LOGGER.info("Force full refresh completed for account: %s", "[redacted]")
 
     # Only register if not already registered
     if not hass.services.has_service(DOMAIN, SERVICE_FORCE_REFRESH):

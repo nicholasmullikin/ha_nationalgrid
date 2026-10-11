@@ -167,19 +167,27 @@ class NationalGridDataUpdateCoordinator(
             data = await self._fetch_all_data()
         except InvalidAuthError as exception:
             _LOGGER.error(
-                "Authentication failed during %s refresh: %s", mode, exception
+                "Authentication failed during %s refresh: %s",
+                mode,
+                type(exception).__name__,
             )
-            raise ConfigEntryAuthFailed(exception) from exception
+            msg = "National Grid authentication failed"
+            raise ConfigEntryAuthFailed(msg) from None
         except (
             CannotConnectError,
             RetryExhaustedError,
             NationalGridError,
         ) as exception:
-            _LOGGER.warning("National Grid %s refresh failed: %s", mode, exception)
+            _LOGGER.warning(
+                "National Grid %s refresh failed: %s", mode, type(exception).__name__
+            )
             if self._previous_update_success:
-                _LOGGER.warning("National Grid service unavailable: %s", exception)
+                _LOGGER.warning(
+                    "National Grid service unavailable: %s", type(exception).__name__
+                )
             self._previous_update_success = False
-            raise UpdateFailed(exception) from exception
+            msg = "National Grid refresh failed"
+            raise UpdateFailed(msg) from None
 
         if not self._previous_update_success:
             _LOGGER.info("National Grid service recovered")
@@ -259,7 +267,9 @@ class NationalGridDataUpdateCoordinator(
                 NationalGridError,
             ) as err:
                 _LOGGER.warning(
-                    "Error fetching data for account %s: %s", account_id, err
+                    "Error fetching data for account %s: %s",
+                    "[redacted]",
+                    type(err).__name__,
                 )
                 continue
 
@@ -273,7 +283,9 @@ class NationalGridDataUpdateCoordinator(
                         billing = link.get("billingAccount") or {}
                         reading_dates[acct_id] = billing.get("nextSchedReadingDate")
             except (CannotConnectError, RetryExhaustedError, NationalGridError) as err:
-                _LOGGER.debug("Could not fetch next reading dates: %s", err)
+                _LOGGER.debug(
+                    "Could not fetch next reading dates: %s", type(err).__name__
+                )
 
         # Log completion at INFO level with summary
         if self._interval_only_mode:
@@ -332,13 +344,13 @@ class NationalGridDataUpdateCoordinator(
     ) -> None:
         """Fetch billing, usage, cost, and AMI data for a single account."""
         # Fetch billing account info (always needed for premise number).
-        _LOGGER.debug("Fetching billing account: %s", account_id)
+        _LOGGER.debug("Fetching billing account: %s", "[redacted]")
         billing_account = await self.api.get_billing_account(account_id)
         accounts[account_id] = billing_account
         _LOGGER.debug(
             "Billing account %s: region=%s, meters=%s",
-            account_id,
-            billing_account.get("region"),
+            "[redacted]",
+            "[redacted]",
             len(billing_account.get("meter", {}).get("nodes", [])),
         )
 
@@ -354,8 +366,8 @@ class NationalGridDataUpdateCoordinator(
                 )
                 _LOGGER.debug(
                     "Found meter: service_point=%s, fuel_type=%s",
-                    service_point,
-                    meter.get("fuelType"),
+                    "[redacted]",
+                    "[redacted]",
                 )
 
         # Skip usage/cost/bill fetching in interval-only mode
@@ -410,7 +422,7 @@ class NationalGridDataUpdateCoordinator(
             _LOGGER.debug(
                 "Fetched %s usage records for account %s",
                 len(account_usages),
-                account_id,
+                "[redacted]",
             )
         except (
             CannotConnectError,
@@ -420,8 +432,8 @@ class NationalGridDataUpdateCoordinator(
         ) as err:
             _LOGGER.debug(
                 "Could not fetch energy usages for account %s: %s",
-                account_id,
-                err,
+                "[redacted]",
+                type(err).__name__,
             )
             return []
         else:
@@ -437,7 +449,7 @@ class NationalGridDataUpdateCoordinator(
         try:
             region = billing_account.get("region", "")
             if not region:
-                _LOGGER.debug("No region for account %s, skipping costs", account_id)
+                _LOGGER.debug("No region for account %s, skipping costs", "[redacted]")
                 return []
             account_costs = await self.api.get_energy_usage_costs(
                 account_number=account_id,
@@ -447,7 +459,7 @@ class NationalGridDataUpdateCoordinator(
             _LOGGER.debug(
                 "Fetched %s cost records for account %s",
                 len(account_costs),
-                account_id,
+                "[redacted]",
             )
         except (
             CannotConnectError,
@@ -457,8 +469,8 @@ class NationalGridDataUpdateCoordinator(
         ) as err:
             _LOGGER.debug(
                 "Could not fetch energy costs for account %s: %s",
-                account_id,
-                err,
+                "[redacted]",
+                type(err).__name__,
             )
             return []
         else:
@@ -468,14 +480,18 @@ class NationalGridDataUpdateCoordinator(
         """Fetch bill history for an account."""
         try:
             bills = await self.api.get_bills(account_id)
-            _LOGGER.debug("Fetched %s bills for account %s", len(bills), account_id)
+            _LOGGER.debug("Fetched %s bills for account %s", len(bills), "[redacted]")
         except (
             CannotConnectError,
             RetryExhaustedError,
             NationalGridError,
             ValueError,
         ) as err:
-            _LOGGER.debug("Could not fetch bills for account %s: %s", account_id, err)
+            _LOGGER.debug(
+                "Could not fetch bills for account %s: %s",
+                "[redacted]",
+                type(err).__name__,
+            )
             return []
         else:
             return bills
@@ -501,7 +517,7 @@ class NationalGridDataUpdateCoordinator(
         if customer_number is None:
             _LOGGER.warning(
                 "Account %s has no customerNumber — skipping bill history fetch",
-                account_id,
+                "[redacted]",
             )
             return
         customer_number = str(customer_number)
@@ -520,13 +536,13 @@ class NationalGridDataUpdateCoordinator(
                 _LOGGER.debug(
                     "Fetched %s electric bill history records for account %s",
                     len(electric_bill_history[account_id]),
-                    account_id,
+                    "[redacted]",
                 )
             except Exception as err:  # noqa: BLE001
                 _LOGGER.warning(
                     "Failed to fetch electric bill history for account %s: %s",
-                    account_id,
-                    err,
+                    "[redacted]",
+                    type(err).__name__,
                 )
 
         if "GAS" in fuel_types:
@@ -537,13 +553,13 @@ class NationalGridDataUpdateCoordinator(
                 _LOGGER.debug(
                     "Fetched %s gas bill history records for account %s",
                     len(gas_bill_history[account_id]),
-                    account_id,
+                    "[redacted]",
                 )
             except Exception as err:  # noqa: BLE001
                 _LOGGER.warning(
                     "Failed to fetch gas bill history for account %s: %s",
-                    account_id,
-                    err,
+                    "[redacted]",
+                    type(err).__name__,
                 )
 
     async def _fetch_ami_data(  # noqa: PLR0913
@@ -641,15 +657,17 @@ class NationalGridDataUpdateCoordinator(
         ) as err:
             if start_dt == default_start:
                 _LOGGER.debug(
-                    "Could not fetch interval reads for meter %s: %s", sp, err
+                    "Could not fetch interval reads for meter %s: %s",
+                    "[redacted]",
+                    type(err).__name__,
                 )
                 return
             _LOGGER.info(
                 "AMI-anchored interval-read window (from %s) failed for meter %s:"
                 " %s — retrying with 24h fallback window",
-                start_dt,
-                sp,
-                err,
+                "[redacted]",
+                "[redacted]",
+                type(err).__name__,
             )
             try:
                 reads = await self.api.get_interval_reads(
@@ -661,11 +679,11 @@ class NationalGridDataUpdateCoordinator(
                 CannotConnectError,
                 RetryExhaustedError,
                 NationalGridError,
-            ) as err2:
+            ):
                 _LOGGER.debug(
                     "Fallback interval-read fetch also failed for meter %s: %s",
-                    sp,
-                    err2,
+                    "[redacted]",
+                    "[redacted]",
                 )
                 return
 
@@ -674,23 +692,21 @@ class NationalGridDataUpdateCoordinator(
         if reads:
             times = [r.get("startTime") for r in reads if r.get("startTime")]
             if times:
-                min_t = min(times)
-                max_t = max(times)
+                min(times)
+                max(times)
                 _LOGGER.debug(
                     "Fetched %s interval reads for meter %s (range: %s to %s)",
                     len(reads),
-                    sp,
-                    min_t[:_DATETIME_LOG_LEN]
-                    if len(min_t) > _DATETIME_LOG_LEN
-                    else min_t,
-                    max_t[:_DATETIME_LOG_LEN]
-                    if len(max_t) > _DATETIME_LOG_LEN
-                    else max_t,
+                    "[redacted]",
+                    "[redacted]",
+                    "[redacted]",
                 )
             else:
-                _LOGGER.debug("Fetched %s interval reads for meter %s", len(reads), sp)
+                _LOGGER.debug(
+                    "Fetched %s interval reads for meter %s", len(reads), "[redacted]"
+                )
         else:
-            _LOGGER.debug("No interval reads returned for meter %s", sp)
+            _LOGGER.debug("No interval reads returned for meter %s", "[redacted]")
 
     async def _fetch_ami_graphql_data(  # noqa: PLR0913
         self,
@@ -734,21 +750,21 @@ class NationalGridDataUpdateCoordinator(
             _LOGGER.info(
                 "First refresh: fetching AMI epoch→%s (hourly) + %s→%s (15-min)"
                 " for meter %s",
-                bulk_end,
-                cutoff,
+                "[redacted]",
+                "[redacted]",
                 today,
-                sp,
+                "[redacted]",
             )
         else:
             date_from = today - timedelta(days=7)
             _LOGGER.debug(
                 "Incremental: fetching AMI %s→%s (hourly) + %s→%s (15-min)"
                 " for meter %s",
-                date_from,
-                bulk_end,
-                cutoff,
+                "[redacted]",
+                "[redacted]",
+                "[redacted]",
                 today,
-                sp,
+                "[redacted]",
             )
 
         # Pass 1: bulk history (hourly records)
@@ -769,8 +785,8 @@ class NationalGridDataUpdateCoordinator(
                 _LOGGER.warning(
                     "Primary AMI fetch failed for meter %s: %s"
                     " — retrying the same range at 15-min resolution",
-                    sp,
-                    err,
+                    "[redacted]",
+                    type(err).__name__,
                 )
                 try:
                     bulk_data = await self.api.get_ami_energy_usages_15min(
@@ -782,15 +798,19 @@ class NationalGridDataUpdateCoordinator(
                     CannotConnectError,
                     RetryExhaustedError,
                     NationalGridError,
-                ) as err2:
+                ):
                     _LOGGER.debug(
                         "Could not fetch bulk AMI for meter %s"
                         " (both methods failed): %s",
-                        sp,
-                        err2,
+                        "[redacted]",
+                        "[redacted]",
                     )
             else:
-                _LOGGER.debug("Could not fetch bulk AMI for meter %s: %s", sp, err)
+                _LOGGER.debug(
+                    "Could not fetch bulk AMI for meter %s: %s",
+                    "[redacted]",
+                    type(err).__name__,
+                )
 
         # Pass 2: recent 72 h at 15-min resolution
         recent_data: list[AmiEnergyUsage] = []
@@ -805,7 +825,11 @@ class NationalGridDataUpdateCoordinator(
             RetryExhaustedError,
             NationalGridError,
         ) as err:
-            _LOGGER.debug("Could not fetch recent 15-min AMI for meter %s: %s", sp, err)
+            _LOGGER.debug(
+                "Could not fetch recent 15-min AMI for meter %s: %s",
+                "[redacted]",
+                type(err).__name__,
+            )
 
         combined = bulk_data + recent_data
         if combined:
@@ -813,7 +837,7 @@ class NationalGridDataUpdateCoordinator(
             self._log_ami_results(combined, sp)
 
     @staticmethod
-    def _log_ami_results(ami_data: list[AmiEnergyUsage], sp: str) -> None:
+    def _log_ami_results(ami_data: list[AmiEnergyUsage], sp: str) -> None:  # noqa: ARG004
         """Log AMI data results with date range info."""
         if ami_data:
             dates = [r.get("date") for r in ami_data if r.get("date")]
@@ -821,21 +845,16 @@ class NationalGridDataUpdateCoordinator(
                 _LOGGER.info(
                     "Fetched %s AMI records for meter %s (date range: %s to %s)",
                     len(ami_data),
-                    sp,
-                    min(dates),
-                    max(dates),
+                    "[redacted]",
+                    "[redacted]",
+                    "[redacted]",
                 )
             else:
                 _LOGGER.debug(
-                    "Fetched %s AMI records for meter %s",
-                    len(ami_data),
-                    sp,
+                    "Fetched %s AMI records for meter %s", len(ami_data), "[redacted]"
                 )
         else:
-            _LOGGER.debug(
-                "No AMI records returned for meter %s",
-                sp,
-            )
+            _LOGGER.debug("No AMI records returned for meter %s", "[redacted]")
 
     def get_meter_data(self, service_point_number: str) -> MeterData | None:
         """Get meter data by service point number."""
@@ -878,8 +897,8 @@ class NationalGridDataUpdateCoordinator(
             filtered = [u for u in account_usages if u.get("usageType") == usage_type]
             _LOGGER.debug(
                 "Filtering usages: fuel_type=%s -> usage_type=%s, found %s matches",
-                fuel_type,
-                usage_type,
+                "[redacted]",
+                "[redacted]",
                 len(filtered),
             )
 
@@ -1025,21 +1044,20 @@ class NationalGridDataUpdateCoordinator(
         """
         if self.data is None:
             _LOGGER.warning(
-                "Force refresh: coordinator has no data yet for meter %s",
-                service_point,
+                "Force refresh: coordinator has no data yet for meter %s", "[redacted]"
             )
             return
         meter_data = self.get_meter_data(service_point)
         if meter_data is None:
             _LOGGER.warning(
-                "Force refresh: meter %s not found in coordinator data", service_point
+                "Force refresh: meter %s not found in coordinator data", "[redacted]"
             )
             return
 
         today = datetime.now(tz=UTC).date()
         premise_number = str(meter_data.billing_account.get("premiseNumber", ""))
 
-        _LOGGER.info("Force refresh triggered for meter %s", service_point)
+        _LOGGER.info("Force refresh triggered for meter %s", "[redacted]")
         await self._fetch_ami_graphql_data(
             meter=meter_data.meter,
             premise_number=premise_number,

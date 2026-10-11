@@ -57,9 +57,9 @@ def _get_energy_usage(
     usage = coordinator.get_latest_usage(meter_data.account_id, fuel_type)
     _LOGGER.debug(
         "Getting usage for account=%s, fuel_type=%s: %s",
-        meter_data.account_id,
-        fuel_type,
-        usage,
+        "[redacted]",
+        "[redacted]",
+        "[redacted]",
     )
     if usage:
         return usage.get("usage")

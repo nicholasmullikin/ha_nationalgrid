@@ -805,7 +805,8 @@ def test_log_ami_results_no_dates(caplog: pytest.LogCaptureFixture) -> None:
     with caplog.at_level(logging.DEBUG):
         NationalGridDataUpdateCoordinator._log_ami_results(readings, "SP_TEST")
 
-    assert "1 AMI records for meter SP_TEST" in caplog.text
+    assert "1 AMI records for meter [redacted]" in caplog.text
+    assert "SP_TEST" not in caplog.text
 
 
 def test_log_ami_results_empty(caplog: pytest.LogCaptureFixture) -> None:
@@ -819,7 +820,8 @@ def test_log_ami_results_empty(caplog: pytest.LogCaptureFixture) -> None:
     with caplog.at_level(logging.DEBUG):
         NationalGridDataUpdateCoordinator._log_ami_results([], "SP_TEST")
 
-    assert "No AMI records returned for meter SP_TEST" in caplog.text
+    assert "No AMI records returned for meter [redacted]" in caplog.text
+    assert "SP_TEST" not in caplog.text
 
 
 async def test_interval_reads_skips_gas_meter(hass: HomeAssistant) -> None:

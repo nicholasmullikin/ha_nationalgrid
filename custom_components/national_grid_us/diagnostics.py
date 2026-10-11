@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from .data import NationalGridConfigEntry
 
 _REDACT = {
+    "selected_accounts",
     "username",
     "password",
     "accountNumber",
@@ -35,9 +36,9 @@ async def async_get_config_entry_diagnostics(
         return {"error": "No data loaded yet"}
 
     meters: dict[str, Any] = {}
-    for sp, meter_data in data.meters.items():
+    for index, (sp, meter_data) in enumerate(data.meters.items(), 1):
         meter = meter_data.meter
-        meters[sp] = {
+        meters[f"meter_{index}"] = {
             "fuel_type": meter.get("fuelType"),
             "has_ami_smart_meter": meter.get("hasAmiSmartMeter"),
             "is_smart_meter": meter.get("isSmartMeter"),

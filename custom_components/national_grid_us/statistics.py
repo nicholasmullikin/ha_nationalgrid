@@ -116,7 +116,7 @@ def _parse_ami_datetime(date_str: str) -> datetime | None:
         dt = dt.replace(tzinfo=UTC) if dt.tzinfo is None else dt.astimezone(UTC)
         return dt.replace(second=0, microsecond=0)  # keep minute; drop sub-minute
     except ValueError:
-        _LOGGER.debug("Could not parse AMI date: %s", date_str)
+        _LOGGER.debug("Could not parse AMI date: %s", "[redacted]")
         return None
 
 
@@ -137,11 +137,11 @@ async def async_import_meter_statistics(
         return
     ami_readings = data.ami_usages.get(service_point, [])
     if not ami_readings:
-        _LOGGER.debug("No AMI readings for %s — nothing to import", service_point)
+        _LOGGER.debug("No AMI readings for %s — nothing to import", "[redacted]")
         return
     meter_data = data.meters.get(service_point)
     if meter_data is None:
-        _LOGGER.debug("No meter data for %s — skipping import", service_point)
+        _LOGGER.debug("No meter data for %s — skipping import", "[redacted]")
         return
 
     fuel_type = str(meter_data.meter.get("fuelType", ""))
@@ -288,7 +288,7 @@ async def _import_hourly_stats(  # noqa: PLR0913
     is_midnight_refresh: bool = False,
 ) -> None:
     """Import hourly AMI usage statistics."""
-    stat_id, fuel, unit, unit_class, stat_name = _resolve_hourly_stat_info(
+    stat_id, _fuel, unit, unit_class, stat_name = _resolve_hourly_stat_info(
         service_point,
         account_id,
         is_gas=is_gas,
@@ -304,7 +304,7 @@ async def _import_hourly_stats(  # noqa: PLR0913
         is_midnight_refresh=is_midnight_refresh,
     )
 
-    stats, running_sum = _build_hourly_stat_list(
+    stats, _running_sum = _build_hourly_stat_list(
         readings,
         last_sum,
         last_ts,
@@ -314,9 +314,7 @@ async def _import_hourly_stats(  # noqa: PLR0913
 
     if not stats:
         _LOGGER.info(
-            "Hourly %s: no new stats to import for %s",
-            fuel,
-            service_point,
+            "Hourly %s: no new stats to import for %s", "[redacted]", "[redacted]"
         )
         return
 
@@ -329,10 +327,10 @@ async def _import_hourly_stats(  # noqa: PLR0913
     async_add_external_statistics(hass, metadata, stats)
 
     _LOGGER.info(
-        "Imported %s hourly AMI stats for %s (sum=%.3f)",
+        "Imported %s hourly AMI stats for %s (sum=%s)",
         len(stats),
-        stat_id,
-        running_sum,
+        "[redacted]",
+        "[redacted]",
     )
 
 
@@ -354,8 +352,8 @@ async def _get_last_sum_and_ts(  # noqa: PLR0913
     """
     if force_import_all:
         _LOGGER.info(
-            "Force import mode for %s - will import all %d readings (fills gaps)",
-            statistic_id,
+            "Force import mode for %s - will import all %s readings (fills gaps)",
+            "[redacted]",
             reading_count,
         )
         return 0.0, 0.0
@@ -394,20 +392,22 @@ async def _get_last_sum_and_ts(  # noqa: PLR0913
                 last_stat = stats[statistic_id][-1]
                 last_sum = last_stat.get("sum") or 0.0
                 _LOGGER.info(
-                    "Midnight refresh for %s: importing all %d readings "
-                    "in 5-day window (continuing from sum=%.3f before %s)",
-                    statistic_id,
+                    "Midnight refresh for %s: importing all %s readings "
+                    "in 5-day window "
+                    "(continuing from sum=%s before %s)",
+                    "[redacted]",
                     reading_count,
-                    last_sum,
-                    earliest_dt.strftime("%Y-%m-%d %H:%M UTC"),
+                    "[redacted]",
+                    "[redacted]",
                 )
                 # Return last_ts=0 to import all readings in window
                 return last_sum, 0.0
 
             _LOGGER.info(
-                "Midnight refresh for %s: importing all %d readings "
-                "in 5-day window (no pre-existing stats, starting from 0)",
-                statistic_id,
+                "Midnight refresh for %s: importing all %s readings "
+                "in 5-day window "
+                "(no pre-existing stats, starting from 0)",
+                "[redacted]",
                 reading_count,
             )
             return 0.0, 0.0
@@ -492,16 +492,10 @@ def _build_hourly_stat_list(
         stats.append(StatisticData(start=bucket_dt, state=hour_total, sum=running_sum))
 
     if skipped_already > 0:
-        _LOGGER.debug(
-            "Skipped %s already-imported AMI readings",
-            skipped_already,
-        )
+        _LOGGER.debug("Skipped %s already-imported AMI readings", "[redacted]")
     if skipped_filtered > 0:
-        label = "consumption" if consumption_only else "return"
         _LOGGER.debug(
-            "Filtered %s readings (keeping %s only)",
-            skipped_filtered,
-            label,
+            "Filtered %s readings (keeping %s only)", "[redacted]", "[redacted]"
         )
 
     return stats, running_sum
@@ -618,11 +612,9 @@ async def _import_interval_stats(  # noqa: PLR0913
 
     _LOGGER.info(
         "Interval %s: cutoff=%s (AMI last hour=%s), clearing and reimporting",
-        stat_type,
-        datetime.fromtimestamp(cutoff_ts, tz=UTC).strftime("%Y-%m-%d %H:%M UTC"),
-        datetime.fromtimestamp(ami_last_ts, tz=UTC).strftime("%Y-%m-%d %H:%M UTC")
-        if ami_last_ts
-        else "none",
+        "[redacted]",
+        "[redacted]",
+        "[redacted]",
     )
 
     # Clear existing stats then yield to event loop before writing new ones
@@ -647,7 +639,7 @@ async def _import_interval_stats(  # noqa: PLR0913
 
     if not stats:
         _LOGGER.info(
-            "Interval %s: no data within window for %s", stat_type, service_point
+            "Interval %s: no data within window for %s", "[redacted]", "[redacted]"
         )
         return
 
@@ -660,11 +652,11 @@ async def _import_interval_stats(  # noqa: PLR0913
     async_add_external_statistics(hass, metadata, stats)
 
     _LOGGER.info(
-        "Imported %s interval %s stats for %s (sum=%.3f)",
+        "Imported %s interval %s stats for %s (sum=%s)",
         len(stats),
-        stat_type,
-        service_point,
-        running_sum,
+        "[redacted]",
+        "[redacted]",
+        "[redacted]",
     )
 
 
@@ -674,7 +666,7 @@ def _bucket_interval_reads(
     *,
     consumption_only: bool,
     return_only: bool,
-    stat_type: str,
+    stat_type: str,  # noqa: ARG001
 ) -> dict[datetime, float]:
     """Bucket interval reads into top-of-hour totals.
 
@@ -705,7 +697,7 @@ def _bucket_interval_reads(
             dt = datetime.fromisoformat(start_str)
             dt = dt.replace(tzinfo=UTC) if dt.tzinfo is None else dt.astimezone(UTC)
         except ValueError:
-            _LOGGER.debug("Could not parse interval startTime: %s", start_str)
+            _LOGGER.debug("Could not parse interval startTime: %s", "[redacted]")
             continue
 
         hour_start = dt.replace(minute=0, second=0, microsecond=0)
@@ -716,17 +708,16 @@ def _bucket_interval_reads(
         hourly_buckets[hour_start] = hourly_buckets.get(hour_start, 0.0) + value
 
     if skipped_filtered > 0:
-        label = "consumption" if consumption_only else "return"
         _LOGGER.debug(
             "Filtered %s interval readings (keeping %s only)",
-            skipped_filtered,
-            label,
+            "[redacted]",
+            "[redacted]",
         )
     if skipped_old > 0:
         _LOGGER.info(
             "Interval %s: skipped %s readings older than cutoff",
-            stat_type,
-            skipped_old,
+            "[redacted]",
+            "[redacted]",
         )
 
     return hourly_buckets
