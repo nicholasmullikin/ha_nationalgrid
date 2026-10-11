@@ -15,7 +15,8 @@ is made about the security of National Grid's servers or all transitive packages
   or meter IDs. The dependency logged authentication redirect locations (which
   can include authorization codes), API error payloads, request URLs and exception
   tracebacks. Replace these with operation summaries, counts, error classes and
-  HTTP statuses at all log levels. Do not dump data objects in support requests.
+  HTTP statuses at all log levels. GraphQL response exceptions use a fixed message
+  instead of embedding backend payloads. Do not dump data objects in support requests.
 - **Low: credential repr disclosure.** NationalGridConfig's generated repr
   included username/password, custom headers and the API subscription key.
   Exclude these fields from repr. Exception string summaries omit response data,
@@ -47,11 +48,11 @@ National Grid may only return partial history; absent data is not zero usage.
 
 ## Packaging and tests
 
-The dependency fork release is 0.6.6.post1; its wheel is pinned by URL and SHA-256
-in manifest.json. The integration fork release is 0.0.0.post2. Update deliberately
+The dependency fork release is 0.6.6.post2; its wheel is pinned by URL and SHA-256
+in manifest.json. The integration fork release is 0.0.0.post3. Update deliberately
 from reviewed commits; never deploy a moving branch as a version pin.
 
-Dependency suite: 222 passed, 99.80% coverage (OIDC helper excluded by upstream
+Dependency suite: 223 passed, 99.80% coverage (OIDC helper excluded by upstream
 coverage configuration; privacy tests explicitly exercise its logging).
 Integration suite: 284 passed, 100% measured coverage, including recorder overlap
 regressions, login/re-auth flows, diagnostics and synthetic secret logging tests.

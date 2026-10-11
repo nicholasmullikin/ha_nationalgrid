@@ -1,3 +1,3 @@
 pytest-homeassistant-custom-component
 pytest-cov
-py-nationalgrid @ https://github.com/nicholasmullikin/py-nationalgrid/releases/download/v0.6.6.post1/py_nationalgrid-0.6.6.post1-py3-none-any.whl#sha256=a919bd02fe35040c9e6dc97882e336d5b99847ddd5b09f8f313ceabaf338daff
+py-nationalgrid @ https://github.com/nicholasmullikin/py-nationalgrid/releases/download/v0.6.6.post2/py_nationalgrid-0.6.6.post2-py3-none-any.whl#sha256=1a89c34c992cfc889f977207096275ccb4f99f12f6b05c84ae9ca35886f1b166
